@@ -1,0 +1,25 @@
+#!/bin/bash
+#Para a exeucção do script, é necessário divulgar para o servidor a chave pública do seu cliente 
+#o cliente também deve instalar o sshpass e ter um arquivo senha_servidor no mesmo diretório do script.
+
+echo "Informe o IP o servidor":
+read serverIP
+
+echo "Informe o nome do usuário no servidor":
+read serverUser
+
+sshpass -f senha_servidor ssh -tt $serverUser@$serverIP '
+sudo apt update; 
+sudo apt upgrade -y;
+sudo apt install -y mc nginx nodejs npm;
+sudo git clone https://github.com/elton-bt/simple-abc-site.git /var/www/html/abc;
+git clone https://github.com/contentful/the-example-app.nodejs.git;
+cd the-example-app.nodejs;
+sudo npm install;
+sudo npm run start:dev;
+sudo systemctl start nginx;
+sudo ufw allow ssh;
+sudo ufw allow "Nginx Full";
+sudo ufw allow 3000;
+sudo ufw enable ' 
+
