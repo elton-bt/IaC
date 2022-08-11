@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: monta_ambiente.sh
   # config.vm.provision "ansible" do |ansible|
   #  ansible.playbook = "ambiente_playbook.yml"
-  #  end
+  # end
   config.vm.provider "virtualbox" do |vbox_config|
     vbox_config.name = "servidorWebUbuntu"
     vbox_config.memory = 1024
