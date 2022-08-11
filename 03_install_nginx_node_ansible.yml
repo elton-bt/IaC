@@ -1,0 +1,40 @@
+ #Playbook ambiente node e aplicação de exemplo
+
+ - name: Instalando pacotes
+   hosts: linuxservers
+   tasks:
+     - name: instalando nos servidores Ubuntu
+       become: true
+       apt:
+         name: "{{ item }}"
+         state: present
+         update_cache: yes 
+       loop:
+         - mc
+         - nginx
+         - nodejs
+         - npm
+       when: ansible_distribution == "Ubuntu"     
+     - name: instalando nos servidores Centos
+       become: true
+       yum:
+         name: "{{ item }}"
+         state: present
+         update_cache: yes 
+       loop:
+         - mc
+         - nginx
+         - nodejs
+         - npm
+       when: ansible_distribution == "Centos"     
+
+  - name: Reiniciando serviços
+    hosts: linuxservers
+    tasks:
+     - name: reiniciando nginx
+       become: true
+       service:
+         name: nginx
+         state: started
+         enabled: yes
+    

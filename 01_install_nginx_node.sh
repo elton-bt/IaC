@@ -1,5 +1,6 @@
 #!/bin/bash
-#Para a exeucção do script, é necessário divulgar para o servidor a chave pública do seu cliente 
+#Para a execução do script, é necessário divulgar para o servidor a chave pública do seu cliente
+#ssh-keygen -t rsa 
 #o cliente também deve instalar o sshpass e ter um arquivo senha_servidor no mesmo diretório do script.
 
 echo "Informe o IP o servidor":
