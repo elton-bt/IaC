@@ -1,0 +1,25 @@
+$script = <<-EOF
+sudo apt update
+sudo apt upgrade -y
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+sudo apt update
+sudo apt-cache policy docker-ce
+sudo apt install -y docker-ce
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo systemctl status docker
+sudo usermod -aG docker vagrant     
+EOF
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"
+  config.vm.network "public_network"
+  config.vm.provision "shell", inline: $script
+  config.vm.provider "virtualbox" do |vbox_config|
+    vbox_config.name = "dockerOnUbuntu"
+    vbox_config.memory = 1024
+    vbox_config.cpus    = 2
+  end
+end
