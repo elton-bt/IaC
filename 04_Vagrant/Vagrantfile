@@ -1,10 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+$script = <<-EOF
+sudo apt update
+sudo apt install nginx -y
+EOF
+
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/jammy64"
   config.vm.network "public_network"
   config.vm.provision "shell", inline: "sudo apt update && sudo apt install nginx -y"
+  # config.vm.provision "shell", inline: $script
   # config.vm.provision "shell", path: monta_ambiente.sh
   # config.vm.provision "ansible" do |ansible|
   #  ansible.playbook = "ambiente_playbook.yml"
