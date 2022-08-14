@@ -15,21 +15,9 @@
          - nodejs
          - npm
        when: ansible_distribution == "Ubuntu"     
-     - name: instalando nos servidores Centos
-       become: true
-       yum:
-         name: "{{ item }}"
-         state: present
-         update_cache: yes 
-       loop:
-         - mc
-         - nginx
-         - nodejs
-         - npm
-       when: ansible_distribution == "Centos"     
 
  - name: Reiniciando serviços
-   hosts: linuxservers
+   hosts: ubuntu
    tasks:
      - name: reiniciando nginx
        become: true
@@ -37,4 +25,5 @@
          name: nginx
          state: started
          enabled: yes
+      when: ansible_distribution == "Ubuntu"
     
