@@ -28,9 +28,9 @@
          - npm
        when: ansible_distribution == "Centos"     
 
-  - name: Reiniciando serviços
-    hosts: linuxservers
-    tasks:
+ - name: Reiniciando serviços
+   hosts: linuxservers
+   tasks:
      - name: reiniciando nginx
        become: true
        service:
