@@ -1,4 +1,4 @@
- #Playbook ambiente node e aplicação de exemplo
+ #Playbook ambiente node
 
  - name: Instalando pacotes
    hosts: linuxservers
