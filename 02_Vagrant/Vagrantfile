@@ -4,6 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/jammy64"
   config.vm.network "public_network"
+  config.vm.synced_folder "/home/usuario", "/vagrant_data"
   config.vm.provider "virtualbox" do |vbox_config|
     vbox_config.name = "servidorUbuntu"
     vbox_config.memory = 1024
