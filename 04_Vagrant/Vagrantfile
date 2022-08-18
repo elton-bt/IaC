@@ -4,13 +4,14 @@
 $script = <<-EOF
 sudo apt update
 sudo apt install nginx -y
+sudo git clone https://github.com/elton-bt/simple-abc-site.git /var/www/html/abc
 EOF
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/jammy64"
-  config.vm.network "public_network"
-  config.vm.provision "shell", inline: "sudo apt update && sudo apt install nginx -y"
-  # config.vm.provision "shell", inline: $script
+  config.vm.network "private_network", ip: "192.168.56.123"
+  # config.vm.provision "shell", inline: "sudo apt update && sudo apt install nginx -y"
+  config.vm.provision "shell", inline: $script
   # config.vm.provision "shell", path: monta_ambiente.sh
   # config.vm.provision "ansible" do |ansible|
   #  ansible.playbook = "ambiente_playbook.yml"
