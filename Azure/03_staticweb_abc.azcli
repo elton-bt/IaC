@@ -1,0 +1,21 @@
+#Logando no azure
+az login
+
+#Criando um aplicativo web estático
+az staticwebapp create \
+    --name abc-site-paas \
+    --resource-group labsMouraTechRG \
+    --source https://github.com/elton-bt/simple-abc-site \
+    --location "westus2" \
+    --branch main \
+    --login-with-github 
+
+#Exibindo URL de origem do aplicativo web estático
+az staticwebapp show \
+    --name  abc-site-paas \
+    --query "repositoryUrl"
+
+#Exibindo a URL de acesso do nosso site na Azure
+az staticwebapp show \
+    --name abc-site-paas \
+    --query "defaultHostname"

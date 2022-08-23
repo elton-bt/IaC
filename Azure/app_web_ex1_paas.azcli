@@ -1,0 +1,29 @@
+#Criando um plano de serviço:
+az appservice plan create \
+--name appifpeplan \
+--resource-group labs-admredewin-ifpe-rg \
+--location centralus \
+--sku FREE
+
+#Listando o plano de serviço
+az appservice plan list --output table 
+
+#criando o aplicativo web
+az webapp create \
+--name azureifpepage \
+--resource-group labs-admredewin-ifpe-rg --plan appifpeplan 
+
+#listando o aplicativo web
+az webapp list --output table
+
+#Implantando um código de exemplo do GitHub:
+az webapp deployment source config \
+--name azureifpepage \
+--resource-group labs-admredewin-ifpe-rg \
+--repo-url "https://github.com/Azure-Samples/php-docs-hello-world" \
+--branch master \
+--manual-integration
+
+#Removendo o webapp:
+#az webapp delete --name azureifpepage --resource-group labs-admredewin-ifpe-rg
+    

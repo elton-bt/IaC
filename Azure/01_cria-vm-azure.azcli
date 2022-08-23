@@ -1,0 +1,21 @@
+# Criar VM
+az vm create \
+    --resource-group labsMouraTechRG \
+    --name teste-ubuntu-web \
+    --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
+    --computer-name servidorweb01 \
+    --admin-username azureuser \
+    --generate-ssh-keys    
+
+#Instalando o nginx
+az vm run-command invoke \
+   -g labsMouraTechRG \
+   -n teste-ubuntu-web \
+   --command-id RunShellScript \
+   --scripts "sudo apt-get update && sudo apt-get install -y nginx"
+    
+#Abrindo a porta 80
+az vm open-port --port 80 --resource-group labsMouraTechRG --name teste-ubuntu-web
+
+#Apagando os recurso
+az group delete --name labsMouraTechRG

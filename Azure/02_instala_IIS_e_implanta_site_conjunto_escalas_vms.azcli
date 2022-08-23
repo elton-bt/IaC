@@ -1,0 +1,30 @@
+#Cria scale set
+az vmss create \
+  --resource-group labsMouraTechRG \
+  --name teste-vm-escalas \
+  --orchestration-mode Flexible \
+  --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
+  --upgrade-policy-mode automatic \
+  --instance-count 2 \
+  --admin-username azureuser \
+  --generate-ssh-keys
+
+#Executa comando personalizado em cada instância
+az vmss extension set \
+  --publisher Microsoft.Azure.Extensions \
+  --version 2.0 \
+  --name CustomScript \
+  --resource-group labsMouraTechRG \
+  --vmss-name teste-vm-escalas \
+  --settings '{"fileUris":["https://raw.githubusercontent.com/Azure-Samples/compute-automation-configurations/master/automate_nginx.sh"],"commandToExecute":"./automate_nginx.sh"}'
+
+#Atualiza LB
+  az network lb rule create \
+  --resource-group labsMouraTechRG \
+  --name myLoadBalancerRuleWeb \
+  --lb-name teste-vm-escalasLB \
+  --backend-pool-name bepool \
+  --backend-port 80 \
+  --frontend-ip-name LoadBalancerFrontEnd \
+  --frontend-port 80 \
+  --protocol tcp
