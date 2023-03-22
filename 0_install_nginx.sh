@@ -9,5 +9,3 @@ npm install
 npm run build
 sudo mkdir /var/www/html/counter-app
 sudo cp -r build/. /var/www/html/counter-app/
-
-

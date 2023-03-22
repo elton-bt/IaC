@@ -11,17 +11,16 @@ read serverUser
 
 sshpass -f senha_servidor ssh -tt $serverUser@$serverIP '
 sudo apt update; 
-sudo apt upgrade -y;
-sudo apt install -y mc nginx nodejs npm;
-sudo git clone https://github.com/elton-bt/simple-abc-site.git /var/www/html/abc;
-git clone https://github.com/contentful/the-example-app.nodejs.git;
-sudo npm install pm2 -g;
-cd the-example-app.nodejs;
-sudo npm install;
-sudo pm2 start "npm run start:dev" app.js;
-sudo systemctl start nginx;
+sudo apt upgrade -y
+sudo apt install -y mc nginx nodejs npm
+git clone https://github.com/arnab-datta/counter-app.git
+cd counter-app
+npm install
+npm run build
+sudo mkdir /var/www/html/counter-app
+sudo cp -r build/. /var/www/html/counter-app/
 sudo ufw allow ssh;
 sudo ufw allow "Nginx Full";
-sudo ufw allow 3000;
+sudo ufw allow 80;
 sudo ufw enable ' 
 
