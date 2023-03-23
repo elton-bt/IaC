@@ -32,6 +32,7 @@
      - name: builda o projeto
        shell: |
          cd counter-app
+         sudo apt upgrade -y
          npm install
          npm run build
          sudo mkdir /var/www/html/counter-app

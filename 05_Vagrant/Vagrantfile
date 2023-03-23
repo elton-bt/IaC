@@ -3,7 +3,7 @@
 
 machines = {
   "ansible"   => {"memory" => "1024", "cpu" => "2", "ip" => "30", "image" => "ubuntu/focal64"},
-  "srvweb01" => {"memory" => "512",  "cpu" => "2", "ip" => "31", "image" => "ubuntu/focal64"},
+  "srvweb01" => {"memory" => "512",  "cpu" => "2", "ip" => "31", "image" => "ubuntu/jammy64"},
   "srvweb02" => {"memory" => "512",  "cpu" => "2", "ip" => "32", "image" => "centos/7"}
 }
 
