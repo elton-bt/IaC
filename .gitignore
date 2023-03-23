@@ -2,3 +2,5 @@ senha_servidor
 worker.sh
 .vscode
 .vagrant
+key
+key.pub

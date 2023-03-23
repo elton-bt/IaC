@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "#{name}" do |machine|
       machine.vm.box = "#{conf["image"]}"
       machine.vm.hostname = "#{name}.abc.com"
+      machine.vm.network "public_network"
       machine.vm.network "private_network", ip: "192.168.56.#{conf["ip"]}"
       machine.vm.provider "virtualbox" do |vb|
         vb.name = "#{name}"

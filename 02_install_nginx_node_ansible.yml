@@ -1,7 +1,7 @@
  #Playbook ambiente node
 
  - name: Instalando pacotes
-   hosts: linuxservers
+   hosts: servidoresweb
    tasks:
      - name: instalando nos servidores Ubuntu
        become: true

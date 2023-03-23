@@ -3,7 +3,7 @@
 
 Vagrant.configure("2") do |config|
   config.vm.define "srvweb01" do |srvweb01|
-    srvweb01.vm.box = "ubuntu/jammy64"
+    srvweb01.vm.box = "ubuntu/focal64"
     srvweb01.vm.network "public_network"
     srvweb01.vm.provider "virtualbox" do |vbox_config|
       vbox_config.name = "servidorWebUbuntu"
