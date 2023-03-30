@@ -20,23 +20,12 @@
    hosts: ubuntu
    tasks:
      - name: Clona repositorio com exemplo
+       become: true
        git:
-         repo: https://github.com/arnab-datta/counter-app.git
-         dest: /home/vagrant/counter-app
+         repo: https://github.com/elton-bt/simple-abc-site.git
+         dest: /var/www/html/abc
          clone: yes
          update: yes   
-
- - name: Executa o build do react no servidor
-   hosts: ubuntu
-   tasks:
-     - name: Builda o projeto
-       shell: |
-         cd counter-app
-         sudo apt upgrade -y
-         npm install
-         npm run build
-         sudo mkdir /var/www/html/counter-app
-         sudo cp -r build/. /var/www/html/counter-app/
 
  - name: Reiniciando serviços
    hosts: ubuntu
