@@ -1,9 +1,9 @@
- #Playbook ambiente node
+ # Playbook ambiente react
 
  - name: Instalando pacotes
    hosts: servidoresweb
    tasks:
-     - name: instalando nos servidores Ubuntu
+     - name: Instalando nos servidores Ubuntu
        become: true
        apt:
          name: "{{ item }}"
@@ -16,20 +16,20 @@
          - npm
        when: ansible_distribution == "Ubuntu"
 
- - name: clonando repositorio
+ - name: Clonando repositorio
    hosts: ubuntu
    tasks:
-     - name: clona repositorio com exemplo
+     - name: Clona repositorio com exemplo
        git:
          repo: https://github.com/arnab-datta/counter-app.git
          dest: /home/vagrant/counter-app
          clone: yes
          update: yes   
 
- - name: executa o build do react no servidor
+ - name: Executa o build do react no servidor
    hosts: ubuntu
    tasks:
-     - name: builda o projeto
+     - name: Builda o projeto
        shell: |
          cd counter-app
          sudo apt upgrade -y
@@ -37,15 +37,13 @@
          npm run build
          sudo mkdir /var/www/html/counter-app
          sudo cp -r build/. /var/www/html/counter-app/
-   
+
  - name: Reiniciando serviços
    hosts: ubuntu
    tasks:
-     - name: reiniciando nginx
+     - name: Reiniciando nginx
        become: true
        service:
          name: nginx
          state: started
          enabled: yes
-       when: ansible_distribution == "Ubuntu"
-    

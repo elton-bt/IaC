@@ -1,0 +1,15 @@
+- name: Instalando uma lista de pacotes nos servidores web
+  hosts: servidoresweb
+  vars:
+   - packages:
+      - mc
+      - nginx
+      - npm
+      - nodejs
+
+  tasks:
+   - name: Instalando os pacotes
+     become: true
+     package:
+      name: "{{ packages }}"
+      state: present

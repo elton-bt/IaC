@@ -2,9 +2,10 @@
 # vi: set ft=ruby  :
 
 machines = {
-  "ansible"   => {"memory" => "1024", "cpu" => "2", "ip" => "30", "image" => "ubuntu/focal64"},
-  "srvweb01" => {"memory" => "512",  "cpu" => "2", "ip" => "31", "image" => "ubuntu/jammy64"},
-  "srvweb02" => {"memory" => "512",  "cpu" => "2", "ip" => "32", "image" => "centos/7"}
+  "ansible"   => {"memory" => "512", "cpu" => "2", "ip" => "30", "image" => "ubuntu/jammy64"},
+  "srvweb01" => {"memory" => "512",  "cpu" => "1", "ip" => "31", "image" => "ubuntu/jammy64"},
+  "srvweb02" => {"memory" => "512",  "cpu" => "1", "ip" => "32", "image" => "debian/bullseye64"},
+  "srvbd" => {"memory" => "512",  "cpu" => "1", "ip" => "33", "image" => "centos/7"}
 }
 
 Vagrant.configure("2") do |config|
@@ -27,6 +28,7 @@ Vagrant.configure("2") do |config|
       echo '192.168.56.30 ansible.abc.com' >> /etc/hosts
       echo '192.168.56.31 srvweb01.abc.com' >> /etc/hosts
       echo '192.168.56.32 srvweb02.abc.com' >> /etc/hosts
+      echo '192.168.56.33 srvbd.abc.com' >> /etc/hosts
       EOF
     end
   end

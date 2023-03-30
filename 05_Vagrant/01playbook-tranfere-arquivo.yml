@@ -1,0 +1,9 @@
+- name: Playbook para transferir arquivo
+  hosts: servidoreslinux
+  tasks:
+
+   - name: Tranferir chave pública
+     become: true
+     copy:
+      src: /vagrant/key.pub
+      dest: /tmp
