@@ -2,8 +2,8 @@
 # vi: set ft=ruby  :
 
 machines = {
-  "ansible"   => {"memory" => "512", "cpu" => "2", "ip" => "30", "image" => "ubuntu/jammy64", "script" => "/vagrant/script1.sh"},
-  "srvweb01" => {"memory" => "512",  "cpu" => "1", "ip" => "31", "image" => "ubuntu/jammy64", "script" => "/vagrant/script2.sh"},
+  "ansible"   => {"memory" => "1024", "cpu" => "2", "ip" => "30", "image" => "ubuntu/jammy64", "script" => "/vagrant/script1.sh"},
+  "srvweb01" => {"memory" => "1024",  "cpu" => "1", "ip" => "31", "image" => "ubuntu/jammy64", "script" => "/vagrant/script2.sh"},
   "srvweb02" => {"memory" => "512",  "cpu" => "1", "ip" => "32", "image" => "debian/bullseye64", "script" => "/vagrant/script2.sh"},
   "srvbd" => {"memory" => "512",  "cpu" => "1", "ip" => "33", "image" => "centos/7", "script" => "/vagrant/script2.sh"}
 }

@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.network "private_network", ip: "192.168.56.123"
+  config.vm.network "public_network"
+  config.vm.provision "ansible" do |ansible|
+   ansible.playbook = "deploy_playbook.yml"
+  end
+  config.vm.provider "virtualbox" do |vbox_config|
+    vbox_config.name = "servidorWebUbuntu"
+    vbox_config.memory = 1024
+    vbox_config.cpus    = 2
+  end
+end

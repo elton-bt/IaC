@@ -13,12 +13,11 @@ sshpass -f senha_servidor ssh -tt $serverUser@$serverIP '
 sudo apt update; 
 sudo apt upgrade -y
 sudo apt install -y mc nginx nodejs npm
-git clone https://github.com/arnab-datta/counter-app.git
-cd counter-app
+git clone https://github.com/elton-bt/react-example-app.git
+cd react-example-app
 npm install
 npm run build
-sudo mkdir /var/www/html/counter-app
-sudo cp -r build/. /var/www/html/counter-app/
+sudo cp -r build/. /var/www/html/
 sudo ufw allow ssh;
 sudo ufw allow "Nginx Full";
 sudo ufw allow 80;

@@ -3,7 +3,7 @@
  - name: Instalando pacotes
    hosts: servidoresweb
    tasks:
-     - name: Instalando nos servidores Ubuntu
+     - name: Instalando apenas se forem servidores Ubuntu
        become: true
        apt:
          name: "{{ item }}"
