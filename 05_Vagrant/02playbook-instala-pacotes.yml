@@ -1,15 +1,14 @@
-- name: Instalando uma lista de pacotes nos servidores web
+- name: Instalando pacotes
   hosts: servidoresweb
-  vars:
-   - packages:
-      - mc
-      - nginx
-      - npm
-      - nodejs
-
   tasks:
-   - name: Instalando os pacotes
-     become: true
-     package:
-      name: "{{ packages }}"
-      state: present
+    - name: Instalando apenas se forem servidores Ubuntu
+      become: true
+      ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: 'yes'
+      loop:
+        - mc
+        - nginx
+        - nodejs
+        - npm

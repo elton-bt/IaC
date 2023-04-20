@@ -1,58 +1,59 @@
- # Playbook ambiente react
+- name: Instalando pacotes
+  hosts: servidoresweb
+  tasks:
+    - name: Instalando apenas nos servidores web que forem Ubuntu
+      become: true
+      ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: true
+      loop:
+        - mc
+        - nginx
+        - nodejs
+        - npm
+      when: ansible_distribution == "Ubuntu"
 
- - name: Instalando pacotes
-   hosts: servidoresweb
-   tasks:
-     - name: Instalando apenas nos servidores web que forem Ubuntu
-       become: true
-       ansible.builtin.apt:
-         name: "{{ item }}"
-         state: present
-         update_cache: true
-       loop:
-         - mc
-         - nginx
-         - nodejs
-         - npm
-       when: ansible_distribution == "Ubuntu"
+- name: 'Clone, build e install da app react'
+  hosts: ubuntu
+  tasks:
+    - name: Clona repositorio com exemplo
+      become: true
+      ansible.builtin.git:
+        repo: 'https://github.com/elton-bt/react-example-app.git'
+        dest: /home/vagrant/react-example-app
+        clone: true
+        update: true
+        version: 016d6d9
 
- - name: Clone, build e install da app react
-   hosts: ubuntu
-   tasks:
-     - name: Clona repositorio com exemplo
-       become: true
-       ansible.builtin.git:
-         repo: https://github.com/elton-bt/react-example-app.git
-         dest: /home/vagrant/react-example-app
-         clone: true
-         update: true
+    - name: Instala as dependencias usando npm
+      become: true
+      community.general.npm:
+        path: /home/vagrant/react-example-app
+        state: present
 
-     - name: Instala as dependencias usando npm
-       become: true
-       community.general.npm:
-         path: /home/vagrant/react-example-app
-         state: present
+    - name: Faz o build do projeto
+      become: true
+      ansible.builtin.command: npm run build
+      args:
+        chdir: /home/vagrant/react-example-app
+      register: output
+      changed_when: output.rc != 0
 
-     - name: Faz o build do projeto
-       become: true
-       ansible.builtin.command: npm run build
-       args:
-         chdir: /home/vagrant/react-example-app
+    - name: Faz a copia do build para o diretorio do nginx
+      become: true
+      ansible.builtin.copy:
+        src: /home/vagrant/react-example-app/build/
+        dest: /var/www/html/
+        remote_src: true
+        mode: preserve
 
-     - name: Faz a copia do build para o diretorio do nginx
-       become: true
-       ansible.builtin.copy:
-         src: /home/vagrant/react-example-app/build/
-         dest: /var/www/html/
-         remote_src: true
-
-
- - name: Reiniciando serviços
-   hosts: ubuntu
-   tasks:
-     - name: Reiniciando nginx
-       become: true
-       ansible.builtin.service:
-         name: nginx
-         state: started
-         enabled: true
+- name: Reiniciando serviços
+  hosts: ubuntu
+  tasks:
+    - name: Reiniciando nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true

@@ -1,38 +1,37 @@
- # Playbook ambiente react
+- name: Instalando pacotes
+  hosts: servidoresweb
+  tasks:
+    - name: Instalando apenas se forem servidores Ubuntu
+      become: true
+      ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: 'yes'
+      loop:
+        - mc
+        - nginx
+        - nodejs
+        - npm
+      when: ansible_distribution == "Ubuntu"
 
- - name: Instalando pacotes
-   hosts: servidoresweb
-   tasks:
-     - name: Instalando apenas se forem servidores Ubuntu
-       become: true
-       apt:
-         name: "{{ item }}"
-         state: present
-         update_cache: yes 
-       loop:
-         - mc
-         - nginx
-         - nodejs
-         - npm
-       when: ansible_distribution == "Ubuntu"
+- name: Clonando repositorio
+  hosts: ubuntu
+  tasks:
+    - name: Clona repositorio com exemplo
+      become: true
+      ansible.builtin.git:
+        repo: 'https://github.com/elton-bt/simple-abc-site.git'
+        dest: /var/www/html/abc
+        clone: 'yes'
+        update: 'yes'
+        version: 03eb8db
 
- - name: Clonando repositorio
-   hosts: ubuntu
-   tasks:
-     - name: Clona repositorio com exemplo
-       become: true
-       git:
-         repo: https://github.com/elton-bt/simple-abc-site.git
-         dest: /var/www/html/abc
-         clone: yes
-         update: yes   
-
- - name: Reiniciando serviços
-   hosts: ubuntu
-   tasks:
-     - name: Reiniciando nginx
-       become: true
-       service:
-         name: nginx
-         state: started
-         enabled: yes
+- name: Reiniciando serviços
+  hosts: ubuntu
+  tasks:
+    - name: Reiniciando nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: 'yes'

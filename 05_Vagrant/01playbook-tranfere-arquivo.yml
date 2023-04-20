@@ -4,6 +4,7 @@
 
    - name: Tranferir chave pública
      become: true
-     copy:
+     ansible.builtin.copy:
       src: /vagrant/key.pub
       dest: /tmp
+      mode: preserve
