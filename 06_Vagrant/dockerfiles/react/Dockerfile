@@ -11,6 +11,11 @@ WORKDIR /react-example-app
 
 RUN npm install && \
     npm run build && \
+    rm -rf node_modules && \
+    rm -rf src && \
+    rm -rf public && \
+    apt-get purge -y nodejs npm && \
+    apt-get autoremove -y && \
     rm -rf /var/www/html/* && \
     cp -r build/. /var/www/html/
 
