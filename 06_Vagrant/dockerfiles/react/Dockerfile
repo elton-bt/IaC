@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y mc nginx nodejs npm && \
+    apt-get install -y nginx nodejs npm && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/elton-bt/react-example-app.git
