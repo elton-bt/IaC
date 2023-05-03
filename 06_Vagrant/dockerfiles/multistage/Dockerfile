@@ -3,7 +3,7 @@ FROM ubuntu:22.04 as build-stage
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y mc nginx nodejs npm && \
+    apt-get install -y nginx nodejs npm && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/elton-bt/react-example-app.git
@@ -14,7 +14,7 @@ RUN npm install && \
     npm run build
 
 # Stage 2 - Production
-FROM nginx:latest
+FROM nginx:stable-alpine3.17-slim
 
 RUN rm -rf /usr/share/nginx/html/*
 
