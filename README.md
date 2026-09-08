@@ -113,7 +113,7 @@ cd 01_Vagrant
 # Inicializar e provisionar as máquinas virtuais
 vagrant up
 
-# Acessar a máquina virtual via SSH
+# Acessar a máquina virtual via Vagrant SSH
 vagrant ssh
 # (Para ambientes multi-machine, especifique o nome da máquina: ex: vagrant ssh srvweb01)
 
@@ -123,6 +123,40 @@ vagrant halt
 # Destruir as máquinas e liberar espaço em disco
 vagrant destroy -f
 ```
+
+#### 🔑 Acessando via SSH tradicional com a Chave Privada do Vagrant
+Além do atalho `vagrant ssh`, você pode acessar as máquinas virtuais utilizando o cliente `ssh` nativo do seu terminal ou qualquer ferramenta externa (como VS Code Remote SSH, Termius ou scripts externos).
+
+O Vagrant gera automaticamente um par de chaves SSH exclusivo para cada máquina virtual criada, armazenando a chave privada no diretório local `.vagrant/`.
+
+1. **Inspecionar as configurações de conexão geradas:**
+   ```bash
+   vagrant ssh-config
+   ```
+   *Esse comando exibe o IP (`HostName`), porta (`Port`), usuário (`User`) e o caminho exato da chave privada (`IdentityFile`).*
+
+2. **Conectar diretamente via comando `ssh` nativo:**
+   - **Para máquinas únicas (ex: `01_Vagrant`, `04_Vagrant`, `06_Vagrant`):**
+     ```bash
+     # Conexão pelo IP da rede privada (ex: IP 192.168.56.200 do 06_Vagrant):
+     ssh -i .vagrant/machines/default/virtualbox/private_key vagrant@192.168.56.200
+
+     # Ou através da porta encaminhada no localhost (normalmente 2222):
+     ssh -i .vagrant/machines/default/virtualbox/private_key -p 2222 vagrant@127.0.0.1
+     ```
+
+   - **Para ambientes multi-máquinas (ex: `05_Vagrant`, `07_Vagrant`):**
+     O caminho substitui `default` pelo nome atribuído à máquina no `Vagrantfile`:
+     ```bash
+     # Exemplo: conectando no nó 'ansible' (192.168.56.30) do laboratório 05:
+     ssh -i .vagrant/machines/ansible/virtualbox/private_key vagrant@192.168.56.30
+
+     # Exemplo: conectando no nó 'master' (192.168.56.100) do cluster Swarm no 07:
+     ssh -i .vagrant/machines/master/virtualbox/private_key vagrant@192.168.56.100
+     ```
+
+> 💡 **Dica:** Se você costuma recriar as máquinas virtuais com frequência (`vagrant destroy` e `vagrant up`), o IP pode ter o host key alterado. Para evitar avisos de chave modificada, adicione as opções:  
+> `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i <caminho_da_chave> vagrant@<ip>`
 
 ### Executando Playbooks no Laboratório Ansible (`05_Vagrant`)
 Acesse a máquina de controle:
