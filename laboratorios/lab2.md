@@ -524,18 +524,38 @@ A maioria dos incidentes de certificado (Cenário 7) vem de **gestão manual**: 
 
 ### Como configurar
 
-1. Garanta que a API está rodando em `8081` (terminal 1). Este cenário testa só a API direto pelo Caddy — sem envolver o frontend, para manter o foco só em HTTPS (e evitar a pegadinha de navegador explicada mais abaixo).
+1. Garanta que a API está rodando em `8081` (terminal 1), bem como o frontend em `8082` (terminal 1).
 
-2. Crie um `Caddyfile-https-auto` bem enxuto, igual ao dos Cenários 4/5, só trocando o endereço do site por um ip/hostname (em vez de só uma porta):
-   ```caddyfile
-   https://ip-da-vm:9444 {
-       tls internal
-       reverse_proxy ip-da-vm:8081
-   }
+2. Mude o config.js do frontend para apontar para o Caddy, não direto para a API:
+   ```js
+   window.GOTODOLIST_CONFIG = {
+     apiBase: "https://ip-da-vm",
+     version: "dev",
+   };
    ```
-     Repare: como o endereço tem um ip (não só uma porta como `:9090`/`:9091` dos Cenários 4/5), o Caddy entende que esse site precisa de HTTPS **automático** — sem vocês pedirem, sem vocês gerarem nada.
 
-3. Suba o Caddy:
+3. Crie um `Caddyfile-https-auto` com o conteúdo abaixo:
+   ```caddyfile
+   https://ip-da-vm {
+    tls internal
+
+    # Rotas da API → Go na 8081 - notem o IP privado da API
+    handle /health* {
+        reverse_proxy 127.0.0.1:8081
+    }
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8081
+    }
+
+    # Tudo mais → frontend Python na 8082
+    handle {
+        reverse_proxy 127.0.0.1:8082
+    }
+   }
+
+   ```
+
+4. Suba o Caddy:
    ```bash
    caddy run --config Caddyfile-https-auto --adapter caddyfile
    ```
@@ -543,7 +563,7 @@ A maioria dos incidentes de certificado (Cenário 7) vem de **gestão manual**: 
 
 ### Como confirmar que está funcionando
 
-1. Acesse `https://ip-da-vm:9444/health` **diretamente no navegador** (não pelo frontend). Deve aparecer um aviso de certificado não confiável (`NET::ERR_CERT_AUTHORITY_INVALID` no Chrome) — o Caddy usou sua **própria CA interna**, já que esse hostname não é um domínio público de verdade (o Caddy percebe isso sozinho e nem tenta pedir certificado ao Let's Encrypt).
+1. Acesse `https://ip-da-vm` **diretamente no navegador** (não pelo frontend). Deve aparecer um aviso de certificado não confiável (`NET::ERR_CERT_AUTHORITY_INVALID` no Chrome) — o Caddy usou sua **própria CA interna**, já que esse hostname não é um domínio público de verdade (o Caddy percebe isso sozinho e nem tenta pedir certificado ao Let's Encrypt).
 2. Em outro terminal, instale a CA interna do Caddy no repositório de confiança do seu sistema (confira com `caddy help trust` se o comando existe na sua versão):
    ```bash
    sudo caddy trust
@@ -556,14 +576,21 @@ A maioria dos incidentes de certificado (Cenário 7) vem de **gestão manual**: 
 5. No seu computador físico, abra o navegador e instale esse certificado como **Autoridade Certificadora confiável** (o processo depende do sistema operacional e do navegador — no Windows, por exemplo, você clica duas vezes no `.crt` e segue o assistente; no macOS, abre o Keychain Access e arrasta o arquivo para lá; no Linux, depende da distro e do navegador). Depois de instalado, feche e reabra o navegador.
    - **Chrome / Brave / Edge**: Acesse `chrome://settings/certificates` → Aba Autoridades → Clique em Importar e selecione o arquivo `caddy-root.crt` → Marque a opção de confiar nesta autoridade para identificar sites.
    - **Firefox**: Acesse `about:preferences#privacy` → Role até Certificados → Ver certificados → Aba Autoridades → Importar.
-6. Recarregue `https://ip-da-vm:9444/health` — agora o cadeado aparece **válido**, sem aviso nenhum, e o JSON de resposta (`{"status":"ok"}`) aparece na tela.
+6. Recarregue `https://ip-da-vm` — agora o cadeado aparece **válido**, sem aviso nenhum.
 
-
-> ⚠️ **Por que testar direto no navegador/`curl`, e não pelo frontend/SPA:** navegadores (principalmente o Firefox) costumam aplicar a exceção de "certificado não confiável, mas aceito o risco" só para a página que você abriu diretamente — uma chamada `fetch()` em segundo plano (como o frontend faz para `/health` e `/api/tasks`) para o **mesmo endereço** pode continuar falhando silenciosamente (`NetworkError`/`Failed to fetch`) mesmo depois de você aceitar o aviso na aba principal. É uma limitação conhecida do navegador com certificados não confiáveis, não um problema do Caddy — por isso este cenário confirma direto com o navegador e o `curl`, sem passar pelo frontend.
 
 ### Resumo
 - Isso é **HTTPS local de desenvolvimento**, diferente do que acontece em produção com um domínio real: lá, o Caddy troca a CA interna por uma CA pública (Let's Encrypt/ZeroSSL) automaticamente, e o navegador de qualquer visitante já confia nela por padrão — ninguém mais precisa rodar `caddy trust`.
 - `caddy trust` instala uma CA nova no seu sistema. Em uma máquina compartilhada (ex.: laboratório da faculdade), rode `sudo caddy untrust` ao final da aula para remover essa confiança extra.
+- Sem um nome de domínio público, o Caddy não consegue obter certificado de uma CA pública (Let's Encrypt/ZeroSSL) — mas ele ainda consegue gerar um certificado **interno** confiável para a sua própria CA interna, e isso é suficiente para desenvolvimento local.
+- Se houvesse uma outra API executando em outro host, bastaria adicionar outro bloco `handle` no Caddyfile, apontando para o IP/porta corretos, e o Caddy cuidaria de obter certificado válido para esse outro host também. Ex:
+   ```caddyfile
+   # API de usuários → VM diferente
+    handle /users* {
+        reverse_proxy ip-da-outra-api:porta-api
+    }
+    ```
+    O navegador acessa https://ip-da-vm/users → Caddy roteia para http://ip-da-outra-api:porta-api/users de forma transparente. O usuário nem sabe que existe uma segunda VM. Isso é exatamente o padrão API Gateway / Reverse Proxy — um ponto de entrada único (geralmente com IP público) que distribui o tráfego para múltiplos serviços em máquinas diferentes. Em produção é assim que funciona o NGINX, o Traefik, o AWS ALB, etc. O Caddy só torna isso mais simples de configurar.
 - Reverta o `config.js` para `apiBase: ""` antes de seguir para outros exercícios, para não carregar configuração de teste.
 
 ---
