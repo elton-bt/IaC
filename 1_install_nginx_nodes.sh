@@ -18,7 +18,10 @@ while read -r serverIP serverUser; do
     cd react-example-app;
     npm install;
     npm run build;
+    sudo rm -rf /var/www/html/*;
     sudo cp -r build/. /var/www/html/;
+    sudo sed -i "s/try_files \$uri \$uri\/ =404;/try_files \$uri \$uri\/ \/index.html;/" /etc/nginx/sites-available/default;
+    sudo nginx -t && sudo systemctl reload nginx;
     sudo ufw allow ssh;
     sudo ufw allow "Nginx Full";
     sudo ufw allow 80;
