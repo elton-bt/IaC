@@ -4,7 +4,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install -y mc nginx nodejs npm
 
-# Clona o repositório correto
+# Clona o repositório
 git clone https://github.com/elton-bt/react-example-app.git
 cd react-example-app
 
