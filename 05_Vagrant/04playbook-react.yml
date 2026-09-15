@@ -48,12 +48,19 @@
         remote_src: true
         mode: preserve
 
+    - name: Configura o Nginx para redirecionar rotas SPA para o index.html
+      become: true
+      ansible.builtin.replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'try_files \$uri \$uri/ =404;'
+        replace: 'try_files $uri $uri/ /index.html;'
+
 - name: Reiniciando serviços
   hosts: ubuntu
   tasks:
-    - name: Reiniciando nginx
+    - name: Recarrega nginx para aplicar configuracao
       become: true
       ansible.builtin.service:
         name: nginx
-        state: started
+        state: reloaded
         enabled: true

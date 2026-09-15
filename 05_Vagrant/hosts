@@ -4,7 +4,7 @@
 [debian]
 192.168.56.32
 
-[centos]
+[alma]
 192.168.56.33
 
 [servidoresweb]

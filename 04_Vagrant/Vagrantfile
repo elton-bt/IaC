@@ -2,18 +2,23 @@
 # vi: set ft=ruby :
 
 $script = <<-EOF
-sudo apt update; 
-sudo apt upgrade -y
+export DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+sudo apt update
+sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 sudo apt install -y mc nginx nodejs npm
 git clone https://github.com/elton-bt/react-example-app.git
 cd react-example-app
 npm install
 npm run build
+sudo rm -rf /var/www/html/*
 sudo cp -r build/. /var/www/html/
+sudo sed -i 's/try_files \$uri \$uri\/ =404;/try_files \$uri \$uri\/ \/index.html;/' /etc/nginx/sites-available/default
+sudo nginx -t && sudo systemctl reload nginx
 EOF
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "bento/ubuntu-26.04"
   config.vm.network "private_network", ip: "192.168.56.123"
   config.vm.network "public_network"
   # config.vm.provision "shell", inline: "sudo apt update && sudo apt install nginx -y"

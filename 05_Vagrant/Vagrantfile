@@ -2,10 +2,10 @@
 # vi: set ft=ruby  :
 
 machines = {
-  "ansible"   => {"memory" => "1024", "cpu" => "2", "ip" => "30", "image" => "ubuntu/jammy64", "script" => "/vagrant/script1.sh"},
-  "srvweb01" => {"memory" => "1024",  "cpu" => "1", "ip" => "31", "image" => "ubuntu/jammy64", "script" => "/vagrant/script2.sh"},
-  "srvweb02" => {"memory" => "512",  "cpu" => "1", "ip" => "32", "image" => "debian/bullseye64", "script" => "/vagrant/script2.sh"},
-  "srvbd" => {"memory" => "512",  "cpu" => "1", "ip" => "33", "image" => "centos/7", "script" => "/vagrant/script2.sh"}
+  "ansible"   => {"memory" => "1024", "cpu" => "2", "ip" => "30", "image" => "bento/ubuntu-26.04", "script" => "/vagrant/script1.sh"},
+  "srvweb01" => {"memory" => "1024",  "cpu" => "1", "ip" => "31", "image" => "bento/ubuntu-26.04", "script" => "/vagrant/script2.sh"},
+  "srvweb02" => {"memory" => "512",  "cpu" => "1", "ip" => "32", "image" => "bento/debian-13", "script" => "/vagrant/script2.sh"},
+  "srvbd" => {"memory" => "512",  "cpu" => "1", "ip" => "33", "image" => "bento/almalinux-10", "script" => "/vagrant/script2.sh"}
 }
 
 $default_network_interface = `ip route | awk '/^default/ {printf "%s", $5; exit 0}'`
