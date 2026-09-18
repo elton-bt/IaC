@@ -1,3 +1,12 @@
+#verificar instalação
+$ docker --version
+
+#verificar se o daemon do docker está em execução
+$ docker info
+
+#Executar o clássico container de teste:
+$ docker container run hello-world
+
 #baixar a imagem do repositório
 $ docker pull ubuntu/nginx
 $ docker pull nginx:alpine
@@ -7,17 +16,19 @@ $ docker container run --name meu-ubuntu ubuntu
 $ docker container run --name meu-ubuntu2 -ti ubuntu
 $ docker container run --name meu-nginx ubuntu/nginx
 $ docker container run --name meu-nginx2 -d ubuntu/nginx
-$ docker container run --name meu-nginx3 -d nginx:alpine
+$ docker run --name meu-nginx3 -d nginx:alpine
 
 #entrando no container
 $ docker exec -it meu-nginx3 sh
-curl localhost
+$ curl localhost
 
 #listar containers em execução
 $ docker container ls
+$ docker ps 
 
 #listar todos os containers
 $ docker container ls -a
+$ docker ps -a
 
 #parar o container
 $ docker container stop ID_DO_CONTAINER
@@ -34,6 +45,9 @@ $ docker image ls ID_DO_CONTAINER
 #remove imagens de containers baixadas
 $ docker image rm ID_DO_CONTAINER
 
+#vinculando portas do host com o container
+$ docker container run -d -p 8080:80 --name servidorweb nginx:alpine
+
 #visualizar consumo de recursos do container
 $ docker container stats
 $ docker container stats ID_DO_CONTAINER
@@ -46,8 +60,8 @@ $ docker container logs ID_DO_CONTAINER
 $ docker container logs -f ID_DO_CONTAINER
 
 #inspecionar detalhes do container
-$ docker container inspec ID_DO_CONTAINER
-$ docker container inspec ID_DO_CONTAINER | grep -i inspec
+$ docker inspect --type=container NOME_DO_CONTAINER
+$ $ docker inspect --format='{{.State.Status}}' NOME_DO_CONTAINER
 
 #configurar memória e cpu do containers
 $ docker container run --name meu-ubuntu -d -m 512M --cpus=1 ubuntu/nginx
