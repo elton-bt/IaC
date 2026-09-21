@@ -1,22 +1,26 @@
-FROM ubuntu:22.04
+FROM nginxinc/nginx-unprivileged:1.31-alpine-slim
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y nginx nodejs npm && \
-    rm -rf /var/lib/apt/lists/*
+LABEL maintainer="elton-bt" description="React Example App served with unprivileged Nginx"
 
-RUN git clone https://github.com/elton-bt/react-example-app.git
+USER root
 
-WORKDIR /react-example-app
+COPY ./react-example-app /tmp/app
 
-RUN npm install && \
+RUN apk add --no-cache --virtual .build-deps nodejs npm && \
+    cd /tmp/app && \
+    npm install && \
     npm run build && \
-    rm -rf node_modules && \
-    rm -rf src && \
-    rm -rf public && \
-    apt-get purge -y nodejs npm && \
-    apt-get autoremove -y && \
-    rm -rf /var/www/html/* && \
-    cp -r build/. /var/www/html/
+    rm -rf /usr/share/nginx/html/* && \
+    cp -r /tmp/app/build/. /usr/share/nginx/html/ && \
+    chown -R nginx:nginx /usr/share/nginx/html && \
+    apk del .build-deps && \
+    rm -rf /tmp/app /root/.npm /tmp/* /var/cache/apk/*
+
+EXPOSE 8080
+
+USER nginx
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -q --spider http://localhost:8080/ || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

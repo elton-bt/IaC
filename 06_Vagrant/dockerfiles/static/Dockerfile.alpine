@@ -1,6 +1,8 @@
-FROM nginx:stable-alpine3.17-slim
-RUN apk update && apk add git
-RUN rm -rf /usr/share/nginx/html/*
-RUN git clone https://github.com/elton-bt/simple-abc-site /usr/share/nginx/html
-EXPOSE 80
-CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
+FROM nginxinc/nginx-unprivileged:1.31-alpine-slim
+LABEL maintainer="elton-bt" description="Simple ABC Site served with Nginx"
+COPY ./simple-abc-site /usr/share/nginx/html
+EXPOSE 8080
+USER nginx
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -q --spider http://localhost:8080/ || exit 1
+CMD ["nginx", "-g", "daemon off;"]
