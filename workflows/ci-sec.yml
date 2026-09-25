@@ -1,0 +1,90 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Permite disparo manual via interface do GitHub Actions
+
+jobs:
+  build-and-test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar o Runtime
+        uses: actions/setup-node@v4  # configure o runtime de acordo com a linguagem do projeto (Node.js, Python, Go, Java, etc.)
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: 📦 Instalar Dependências do Backend
+        run: |
+          cd backend
+          npm ci   
+
+      - name: 🔍 Verificação de Qualidade de Código (Lint)
+        run: |
+          cd backend
+          npm run lint --if-present
+
+      - name: 🏗️ Compilar / Build da Aplicação
+        run: |
+          cd backend
+          npm run build --if-present
+
+      - name: 🧪 Executar Testes Automatizados
+        run: |
+          cd backend
+          npm test 
+
+  security-scan:
+    name: DevSecOps (SAST, Trivy & DAST)
+    needs: [build-and-test]   # Só executa se o build e testes passarem
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      # --- 1. SAST (Static Application Security Testing) ---
+      - name: 🔍 SAST com Semgrep (Análise Estática de Código)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/default
+
+      # --- 2. Build da Imagem para os testes seguintes ---
+      - name: 🐳 Build da Imagem Docker Local
+        run: |
+          docker build -t app-backend:local ./backend
+
+      # --- 3. Container Scanning & SCA com Trivy ---
+      - name: 🛡️ Escanear Imagem Docker com Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'app-backend:local'
+          format: 'table'
+          exit-code: '1' # Falha o pipeline se encontrar vulnerabilidade CRÍTICA não corrigida
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # --- 4. Subir a Aplicação para o Teste Dinâmico (DAST) ---
+      - name: 🚀 Subir Aplicação em Background para DAST
+        run: |
+          docker run -d --name app-test -p 3000:3000 app-backend:local
+          sleep 5  # Aguarda inicialização do servidor
+
+      # --- 5. DAST (Dynamic Application Security Testing) ---
+      - name: 🎯 DAST com OWASP ZAP (Baseline Scan)
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'http://localhost:3000'
+          fail_action: false # Gera relatório de alertas sem quebrar a esteira de imediato

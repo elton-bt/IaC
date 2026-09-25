@@ -1,0 +1,44 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Permite disparo manual via interface do GitHub Actions
+
+jobs:
+  build-and-test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar o Runtime
+        uses: actions/setup-node@v4  # configure o runtime de acordo com a linguagem do projeto (Node.js, Python, Go, Java, etc.)
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: 📦 Instalar Dependências do Backend
+        run: |
+          cd backend
+          npm ci   
+
+      - name: 🔍 Verificação de Qualidade de Código (Lint)
+        run: |
+          cd backend
+          npm run lint --if-present
+
+      - name: 🏗️ Compilar / Build da Aplicação
+        run: |
+          cd backend
+          npm run build --if-present
+
+      - name: 🧪 Executar Testes Automatizados
+        run: |
+          cd backend
+          npm test 
